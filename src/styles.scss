@@ -263,6 +263,25 @@
         width: 1920px;
     }
 
+    .mouse-cursor{
+        position: fixed;
+        width: 30px;
+        height: 30px;
+        transform: translate(-10px, -10px);
+        // border: 10px;
+        background-color: yellow;
+        border-radius: 50%;
+        opacity: 0.6;
+        z-index: 99999;
+        span {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            opacity: 1;
+            font-weight: bold;
+        }
+    }
+
     /* Responsive Styles */
     @media screen and (max-width: 767px) {
 

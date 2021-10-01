@@ -10,6 +10,11 @@
 
 
 <!-- Toolbar -->
+<ng-container *ngFor="let user of userList">
+    <div class="mouse-cursor" [ngStyle]="user.position" *ngIf="user.userId != socket.id">
+        <span>{{user.username}}</span>
+    </div>
+</ng-container>
 <div id="container">
     <div class="toolbar" role="banner">
         <img width="40" alt="Angular Logo"
