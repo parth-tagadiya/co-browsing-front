@@ -1,5 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import io from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-master',
@@ -15,7 +16,7 @@ export class MasterComponent implements OnInit {
   username = "master";
 
   ngOnInit(): void {
-    this.socket = io("http://192.168.1.4:5000");
+    this.socket = io(`${environment.settings.apiProtocol}://${environment.settings.apiHost}`);
 
     let element = document.querySelector("html");
     let changes = new MutationObserver((mutations: MutationRecord[]) => {

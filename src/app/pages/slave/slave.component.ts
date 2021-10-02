@@ -1,5 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import io from "socket.io-client";
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-slave',
@@ -15,10 +16,9 @@ export class SlaveComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.socket = io("http://192.168.1.4:5000");
+    this.socket = io(`${environment.settings.apiProtocol}://${environment.settings.apiHost}`);
     this.loadData();
-    // this.username = prompt('What is your name?', '');
-    this.username = "slave"
+    this.username = prompt('What is your name?', '');
   }
 
   loadData() {
