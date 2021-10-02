@@ -15,23 +15,33 @@ export class MasterComponent implements OnInit {
   username = "master";
 
   ngOnInit(): void {
-    this.socket = io("http://192.168.1.5:5000");
+    this.socket = io("http://192.168.1.4:5000");
 
     let element = document.querySelector("html");
     let changes = new MutationObserver((mutations: MutationRecord[]) => {
-      // mutations.forEach((mutation: MutationRecord) => {
-      // console.log(mutations);
-      // });
+      //@ts-ignore
+      let htmlData = document.getElementById("container")?.innerHTML
+      this.socket.emit('sendContent', { html: htmlData, roomId: this.roomId, isSendAll: true });
     }
     );
     //@ts-ignore
-    changes.observe(document.documentElement, {
+    changes.observe(document.getElementById("container"), {
+      // changes.observe(document.documentElement, {
       attributes: true,
       characterData: true,
       childList: true,
       subtree: true,
       // attributeOldValue: true,
       // characterDataOldValue: true
+    });
+
+    //@ts-ignore
+    document.addEventListener('input', (event: any) => {
+      if (event.target.id) {
+        //@ts-ignore
+        let element = document.getElementById(event.target.id);
+        this.sendInput(event.target.id, event.target.value);
+      }
     });
 
     this.loadData();
@@ -68,18 +78,11 @@ export class MasterComponent implements OnInit {
     this.socket.on("userJoined", (data: any) => {
       //@ts-ignore
       let htmlData = document.getElementById("container")?.innerHTML
-      this.socket.emit('sendContent', { html: htmlData, roomId: this.roomId, userId: data.userId });
+      this.socket.emit('sendContent', { html: htmlData, roomId: this.roomId, userId: data.userId, isSendAll: false });
       this.sendSize();
       this.sendScroll();
     });
   }
-
-  // sendFrameData() {
-  //   //@ts-ignore
-  //   let htmlData = document.getElementById("container")?.innerHTML
-  //   this.socket.emit('sendContent', { html: htmlData, roomId: this.roomId });
-  //   this.socket.emit("sendSize", { innerWidth: window.innerWidth, innerHeight: window.innerHeight, roomId: "test" });
-  // }
 
   sendSize() {
     this.socket.emit("sendSize", { innerWidth: window.innerWidth, innerHeight: window.innerHeight, roomId: this.roomId });
@@ -90,7 +93,8 @@ export class MasterComponent implements OnInit {
   }
 
   sendMouseMove(event: any) {
-    this.socket.emit("sendMouse", { userId: this.socket.id, username: this.username, screenX: event.screenX, screenY: event.screenY, clientX: event.clientX, clientY: event.clientY, roomId: this.roomId })
+    this.socket.emit("sendMouse", { userId: this.socket.id, username: this.username, screenX: document.documentElement.scrollLeft + event.screenX, screenY: document.documentElement.scrollTop + event.screenY, clientX: document.documentElement.scrollLeft + event.clientX, clientY: document.documentElement.scrollTop + event.clientY, roomId: this.roomId })
+    // this.socket.emit("sendMouse", { userId: this.socket.id, username: this.username, screenX: event.screenX, screenY: event.screenY, clientX: event.clientX, clientY: event.clientY, roomId: this.roomId })
   }
 
   mouseChange() {
@@ -124,6 +128,10 @@ export class MasterComponent implements OnInit {
     if (index > -1) {
       this.userList.splice(index, 1)
     }
+  }
+
+  sendInput(inputId: any, value: any) {
+    this.socket.emit("sendInput", { roomId: this.roomId, inputId: inputId, value: value })
   }
 
 }

@@ -11,18 +11,14 @@ export class SlaveComponent implements OnInit {
   roomId = "test"
   userList: any[] = [];
   username: any = "";
+
   constructor() { }
 
   ngOnInit(): void {
-    this.socket = io("http://192.168.1.5:5000");
+    this.socket = io("http://192.168.1.4:5000");
     this.loadData();
-
-    this.username = prompt('What is your name?', '');
-  }
-
-  @HostListener('document:mousemove', ['$event'])
-  onMouseMove(event: any) {
-    this.sendMouseMove(event)
+    // this.username = prompt('What is your name?', '');
+    this.username = "slave"
   }
 
   loadData() {
@@ -32,6 +28,7 @@ export class SlaveComponent implements OnInit {
     this.sizeChange();
     this.mouseChange();
     this.disconnectUser();
+    this.inputChange();
   }
 
   connectSocket() {
@@ -40,19 +37,21 @@ export class SlaveComponent implements OnInit {
 
   getData() {
     this.socket.on("getContent", (data: any) => {
-      if (data.userId == this.socket.id) {
+      if (data.userId == this.socket.id || data.isSendAll) {
         // @ts-ignore
         let iframe = document.getElementById('container');
         // @ts-ignore
         let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        // document.getElementById("container").innerHTML = data.html;
-        // //@ts-ignore
         iframeDoc.body.innerHTML = data.html
         const cssLink = document.createElement("link");
         cssLink.href = "../../../styles.css";
         cssLink.rel = "stylesheet";
         cssLink.type = "text/css";
         iframeDoc.head.appendChild(cssLink);
+
+        iframeDoc.body.addEventListener('mousemove', (event: any) => {
+          this.sendMouseMove(event);
+        })
       }
     })
   }
@@ -79,7 +78,11 @@ export class SlaveComponent implements OnInit {
   }
 
   sendMouseMove(event: any) {
-    this.socket.emit("sendMouse", { userId: this.socket.id, username: this.username, screenX: event.screenX, screenY: event.screenY, clientX: event.clientX, clientY: event.clientY, roomId: this.roomId })
+    // @ts-ignore
+    let iframe = document.getElementById('container');
+    // @ts-ignore
+    let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    this.socket.emit("sendMouse", { userId: this.socket.id, username: this.username, screenX: iframeDoc.body.scrollLeft + event.screenX, screenY: iframeDoc.body.scrollTop + event.screenY, clientX: iframeDoc.body.scrollLeft + event.clientX, clientY: iframeDoc.body.scrollTop + event.clientY, roomId: this.roomId })
   }
 
   mouseChange() {
@@ -88,15 +91,23 @@ export class SlaveComponent implements OnInit {
     })
   }
 
-  disconnectUser() {
-    this.socket.on("userDisconnected", (data: any) => {
-      this.removeUserList(data);
-    })
+  inputChange() {
+    this.socket.on("inputChange", (data: any) => {
+      this.changeElement(data);
+    });
+  }
+
+  changeElement(data: any) {
+    let id = data.inputId;
+    let value = data.value;
+    //@ts-ignore
+    document.getElementById('container').contentWindow.document.getElementById(id).value = value
+
+
   }
 
   removeUserList(data: any) {
     let index = this.userList.findIndex((user: any) => user.userId == data.userId)
-    data.position = { top: data.clientY + "px", left: data.clientX + "px" }
     if (index > -1) {
       this.userList.splice(index, 1)
     }
@@ -114,4 +125,12 @@ export class SlaveComponent implements OnInit {
       this.userList[index] = data;
     }
   }
+
+
+  disconnectUser() {
+    this.socket.on("userDisconnected", (data: any) => {
+      this.removeUserList(data);
+    })
+  }
+
 }

@@ -264,7 +264,7 @@
     }
 
     .mouse-cursor{
-        position: fixed;
+        position: absolute;
         width: 30px;
         height: 30px;
         transform: translate(-10px, -10px);
