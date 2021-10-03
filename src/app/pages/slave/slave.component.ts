@@ -12,15 +12,17 @@ export class SlaveComponent implements OnInit {
   roomId = 'test';
   userList: any[] = [];
   username: any = '';
+  isDataLoaded = false;
 
   constructor() { }
 
   ngOnInit(): void {
+    this.username = prompt('What is your name?', '');
     this.socket = io(
       `${environment.settings.apiProtocol}://${environment.settings.apiHost}`
     );
+
     this.loadData();
-    this.username = prompt('What is your name?', '');
   }
 
   loadData() {
@@ -32,6 +34,23 @@ export class SlaveComponent implements OnInit {
     this.inputChange();
     this.mouseChange();
     this.disconnectUser();
+
+
+    // @ts-ignore
+    const iframe = document.getElementById('container-content');
+    // @ts-ignore
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    //@ts-ignore
+    iframeDoc.body.addEventListener('input', (event: any) => {
+      if (event.target.id) {
+        //@ts-ignore
+        this.sendInput(event);
+      }
+    });
+
+    iframeDoc.body.addEventListener('mouseup', (event: any) => {
+      this.onMouseClick(event)
+    });
   }
 
   connectSocket() {
@@ -46,7 +65,7 @@ export class SlaveComponent implements OnInit {
   sendMouseMove(event: any) {
     // Whenever user changes mouse, send that data to all other users.
     // @ts-ignore
-    const iframe = document.getElementById('container');
+    const iframe = document.getElementById('container-content');
     // @ts-ignore
     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
     this.socket.emit('sendMouse', {
@@ -60,13 +79,31 @@ export class SlaveComponent implements OnInit {
 
   getData() {
     this.socket.on('getContent', (data: any) => {
+      this.isDataLoaded = true;
       // Get the html data and setup it in iframe.
       if (data.userId == this.socket.id || data.isSendAll) {
         // Get iframe and insert html.
         // @ts-ignore
-        const iframe = document.getElementById('container');
+        const iframe = document.getElementById('container-content');
         // @ts-ignore
         const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+        //Set Bootstrap
+        const bootstrapCss = document.createElement('link');
+        bootstrapCss.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css';
+        bootstrapCss.rel = 'stylesheet';
+        bootstrapCss.type = 'text/css';
+        iframeDoc.head.appendChild(bootstrapCss);
+        const bootstrapJquery = document.createElement('script');
+        bootstrapJquery.src = 'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js';
+        iframeDoc.head.appendChild(bootstrapJquery);
+        const bootstrapPopper = document.createElement('script');
+        bootstrapPopper.src = 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js';
+        iframeDoc.head.appendChild(bootstrapJquery);
+        const bootstrap = document.createElement('script');
+        bootstrap.src = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js';
+        iframeDoc.head.appendChild(bootstrapJquery);
+
         iframeDoc.body.innerHTML = data.html;
 
         // Insesrt css element into the iframe.
@@ -88,9 +125,9 @@ export class SlaveComponent implements OnInit {
   sizeChange() {
     this.socket.on('sizeChange', (data: any) => {
       //@ts-ignore
-      document.getElementById('container')?.width = data.innerWidth;
+      document.getElementById('container-content')?.width = data.innerWidth;
       //@ts-ignore
-      document.getElementById('container')?.height = data.innerHeight;
+      document.getElementById('container-content')?.height = data.innerHeight;
     });
   }
 
@@ -98,7 +135,7 @@ export class SlaveComponent implements OnInit {
   scrollChange() {
     this.socket.on('scrollChange', (data: any) => {
       //@ts-ignore
-      const iframe = document.getElementById('container');
+      const iframe = document.getElementById('container-content');
       //@ts-ignore
       iframe.contentWindow.scrollTo(data.scrollLeft, data.scrollTop);
     });
@@ -110,7 +147,7 @@ export class SlaveComponent implements OnInit {
       const inputId = data.inputId;
       const type = data.type;
 
-      const iframe = document.getElementById('container');
+      const iframe = document.getElementById('container-content');
       if (!iframe) return;
       //@ts-ignore
       const element = iframe.contentWindow.document.getElementById(inputId);
@@ -161,5 +198,28 @@ export class SlaveComponent implements OnInit {
     if (index > -1) {
       this.userList.splice(index, 1);
     }
+  }
+
+  sendInput(event: any) {
+    const dataToSend: any = {
+      roomId: this.roomId,
+      inputId: event.target.id,
+      type: event.target.type,
+    };
+    if (event.target.type == "text") {
+      dataToSend.value = event.target.value;
+    } else if (event.target.type == "checkbox" || event.target.type == "radio") {
+      dataToSend.checked = event.target.checked;
+    }
+    this.socket.emit("sendInput", dataToSend);
+  }
+
+  onMouseClick(event: any) {
+    const dataToSend: any = {
+      roomId: this.roomId,
+      inputId: event.target.id,
+      type: event.target.type,
+    };
+    this.socket.emit("sendMouseClick", dataToSend);
   }
 }

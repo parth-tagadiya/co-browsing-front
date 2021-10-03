@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import io from 'socket.io-client';
 import { environment } from 'src/environments/environment';
+import * as $ from 'jquery'
 
 @Component({
   selector: 'app-master',
@@ -17,15 +18,20 @@ export class MasterComponent implements OnInit {
 
   ngOnInit(): void {
     this.socket = io(`${environment.settings.apiProtocol}://${environment.settings.apiHost}`);
+    this.loadData();
+  }
+
+  loadData() {
+
 
     let changes = new MutationObserver((mutations: MutationRecord[]) => {
       //@ts-ignore
-      let htmlData = document.getElementById("container")?.innerHTML
+      let htmlData = document.getElementById("container-content")?.innerHTML
       this.socket.emit('sendContent', { html: htmlData, roomId: this.roomId, isSendAll: true });
     }
     );
     //@ts-ignore
-    changes.observe(document.getElementById("container"), {
+    changes.observe(document.getElementById("container-content"), {
       // changes.observe(document.documentElement, {
       attributes: true,
       characterData: true,
@@ -44,14 +50,25 @@ export class MasterComponent implements OnInit {
       }
     });
 
-    this.loadData();
-  }
-
-  loadData() {
     this.connectSocket();
     this.newUserConnected();
     this.mouseChange();
     this.disconnectUser();
+    this.inputChange();
+    this.mouseClickedOnSlave();
+
+    this.flipBtn()
+  }
+
+  flipBtn() {
+    $("#changeImg").click(function () {
+      $("#computer2").toggle(0);
+      $("#computer2b").toggle(0);
+    })
+
+    $("#flip").click(function () {
+      $("#flipDiv").toggleClass("flex-row-reverse")
+    })
   }
 
   // Setting up event listeners for various events like mouse move, window size change, etc..
@@ -78,7 +95,7 @@ export class MasterComponent implements OnInit {
     // Also send necessary details like window size and scroll position.
     this.socket.on("userJoined", (data: any) => {
       //@ts-ignore
-      const htmlData = document.getElementById("container")?.innerHTML
+      const htmlData = document.getElementById("container-content")?.innerHTML
       this.socket.emit('sendContent', { html: htmlData, roomId: this.roomId, userId: data.userId, isSendAll: false });
       this.sendSize();
       this.sendScroll();
@@ -149,6 +166,39 @@ export class MasterComponent implements OnInit {
       dataToSend.checked = event.target.checked;
     }
     this.socket.emit("sendInput", dataToSend);
+  }
+
+  // If master inputs field changes, update the same in slave's component.
+  inputChange() {
+    this.socket.on('inputChange', (data: any) => {
+      const inputId = data.inputId;
+      const type = data.type;
+
+      //@ts-ignore
+      let element = document.getElementById(inputId);
+      if (!element) return;
+
+      if (type == "text") {
+        //@ts-ignore
+        element.value = data.value;
+      } else if (type == "checkbox" || type == "radio") {
+        //@ts-ignore
+        element.checked = data.checked;
+      }
+
+    });
+  }
+
+  mouseClickedOnSlave() {
+    this.socket.on("mouseClicked", (data: any) => {
+      const inputId = data.inputId;
+      const type = data.type;
+      //@ts-ignore
+      let element = document.getElementById(inputId);
+      if (!element) return;
+
+      element.click();
+    })
   }
 
 }
