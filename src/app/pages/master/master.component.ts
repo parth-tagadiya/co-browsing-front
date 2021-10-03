@@ -92,7 +92,7 @@ export class MasterComponent implements OnInit {
 
   sendScroll() {
     // Send master's current scroll position. 
-    this.socket.emit("sendScroll", { scroll: document.documentElement.scrollTop, roomId: this.roomId })
+    this.socket.emit("sendScroll", { scrollTop: document.documentElement.scrollTop, scrollLeft: document.documentElement.scrollLeft, roomId: this.roomId })
   }
 
   sendMouseMove(event: any) {

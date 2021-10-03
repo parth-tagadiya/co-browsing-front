@@ -100,7 +100,7 @@ export class SlaveComponent implements OnInit {
       //@ts-ignore
       const iframe = document.getElementById('container');
       //@ts-ignore
-      iframe.contentWindow.scrollTo(0, data.scroll);
+      iframe.contentWindow.scrollTo(data.scrollLeft, data.scrollTop);
     });
   }
 
