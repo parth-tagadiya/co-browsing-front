@@ -1,136 +1,165 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import io from "socket.io-client";
+import io from 'socket.io-client';
 import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-slave',
   templateUrl: './slave.component.html',
-  styleUrls: ['./slave.component.scss']
+  styleUrls: ['./slave.component.scss'],
 })
 export class SlaveComponent implements OnInit {
   socket: any;
-  roomId = "test"
+  roomId = 'test';
   userList: any[] = [];
-  username: any = "";
+  username: any = '';
 
   constructor() { }
 
   ngOnInit(): void {
-    this.socket = io(`${environment.settings.apiProtocol}://${environment.settings.apiHost}`);
+    this.socket = io(
+      `${environment.settings.apiProtocol}://${environment.settings.apiHost}`
+    );
     this.loadData();
     this.username = prompt('What is your name?', '');
   }
 
   loadData() {
-    this.connectSocket()
+    // On start, make socket connection and setup necessary socket events.
+    this.connectSocket();
     this.getData();
-    this.scrollChange();
     this.sizeChange();
+    this.scrollChange();
+    this.inputChange();
     this.mouseChange();
     this.disconnectUser();
-    this.inputChange();
   }
 
   connectSocket() {
-    this.socket.emit('join', { roomId: this.roomId, isMaster: false, username: this.username });
-  };
-
-  getData() {
-    this.socket.on("getContent", (data: any) => {
-      if (data.userId == this.socket.id || data.isSendAll) {
-        // @ts-ignore
-        let iframe = document.getElementById('container');
-        // @ts-ignore
-        let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        iframeDoc.body.innerHTML = data.html
-        const cssLink = document.createElement("link");
-        cssLink.href = "../../../styles.css";
-        cssLink.rel = "stylesheet";
-        cssLink.type = "text/css";
-        iframeDoc.head.appendChild(cssLink);
-
-        iframeDoc.body.addEventListener('mousemove', (event: any) => {
-          this.sendMouseMove(event);
-        })
-      }
-    })
-  }
-
-  scrollChange() {
-    this.socket.on("scrollChange", (data: any) => {
-      //@ts-ignore
-      let iframe = document.getElementById('container');
-      //@ts-ignore
-      iframe.contentWindow.scrollTo(0, data.scroll);
-      // document.documentElement.scroll({ top: data.scroll, behavior: 'smooth' })
-    });
-  }
-
-  sizeChange() {
-    this.socket.on("sizeChange", (data: any) => {
-      //@ts-ignore
-      document.getElementById("container")?.width = data.innerWidth
-      // document.getElementById("container")?.style.width = data.innerWidth + "px"
-      //@ts-ignore
-      document.getElementById("container")?.height = data.innerHeight
-      // document.getElementById("container")?.style.height = data.innerHeight + "px"
+    // Join to given roomId.
+    this.socket.emit('join', {
+      roomId: this.roomId,
+      isMaster: false,
+      username: this.username,
     });
   }
 
   sendMouseMove(event: any) {
+    // Whenever user changes mouse, send that data to all other users.
     // @ts-ignore
-    let iframe = document.getElementById('container');
+    const iframe = document.getElementById('container');
     // @ts-ignore
-    let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    this.socket.emit("sendMouse", { userId: this.socket.id, username: this.username, screenX: iframeDoc.body.scrollLeft + event.screenX, screenY: iframeDoc.body.scrollTop + event.screenY, clientX: iframeDoc.body.scrollLeft + event.clientX, clientY: iframeDoc.body.scrollTop + event.clientY, roomId: this.roomId })
-  }
-
-  mouseChange() {
-    this.socket.on("mouseChange", (data: any) => {
-      this.addUserList(data);
-    })
-  }
-
-  inputChange() {
-    this.socket.on("inputChange", (data: any) => {
-      this.changeElement(data);
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    this.socket.emit('sendMouse', {
+      roomId: this.roomId,
+      userId: this.socket.id,
+      username: this.username,
+      clientX: iframeDoc.body.scrollLeft + event.clientX,
+      clientY: iframeDoc.body.scrollTop + event.clientY,
     });
   }
 
-  changeElement(data: any) {
-    let id = data.inputId;
-    let value = data.value;
-    //@ts-ignore
-    document.getElementById('container').contentWindow.document.getElementById(id).value = value
+  getData() {
+    this.socket.on('getContent', (data: any) => {
+      // Get the html data and setup it in iframe.
+      if (data.userId == this.socket.id || data.isSendAll) {
+        // Get iframe and insert html.
+        // @ts-ignore
+        const iframe = document.getElementById('container');
+        // @ts-ignore
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.body.innerHTML = data.html;
 
+        // Insesrt css element into the iframe.
+        const cssLink = document.createElement('link');
+        cssLink.href = '../../../styles.css';
+        cssLink.rel = 'stylesheet';
+        cssLink.type = 'text/css';
+        iframeDoc.head.appendChild(cssLink);
 
+        // Setup mouse move listener in iframe.
+        iframeDoc.body.addEventListener('mousemove', (event: any) => {
+          this.sendMouseMove(event);
+        });
+      }
+    });
   }
 
-  removeUserList(data: any) {
-    let index = this.userList.findIndex((user: any) => user.userId == data.userId)
-    if (index > -1) {
-      this.userList.splice(index, 1)
-    }
+  // Whenever master's window size change. update slave's iframe size acording to that.
+  sizeChange() {
+    this.socket.on('sizeChange', (data: any) => {
+      //@ts-ignore
+      document.getElementById('container')?.width = data.innerWidth;
+      //@ts-ignore
+      document.getElementById('container')?.height = data.innerHeight;
+    });
   }
 
+  // Whenever master changes their scroll position. update slave's sccroll position.
+  scrollChange() {
+    this.socket.on('scrollChange', (data: any) => {
+      //@ts-ignore
+      const iframe = document.getElementById('container');
+      //@ts-ignore
+      iframe.contentWindow.scrollTo(0, data.scroll);
+    });
+  }
+
+  // If master inputs field changes, update the same in slave's component.
+  inputChange() {
+    this.socket.on('inputChange', (data: any) => {
+      const inputId = data.inputId;
+      const type = data.type;
+
+      const iframe = document.getElementById('container');
+      if (!iframe) return;
+      //@ts-ignore
+      const element = iframe.contentWindow.document.getElementById(inputId);
+      if (!element) return;
+
+      if (type == "text") {
+        element.value = data.value;
+      } else if (type == "checkbox" || type == "radio") {
+        element.checked = data.checked;
+      }
+
+    });
+  }
+
+  // Mouse related events.
+  // Whenever some another user moves mouse. render mouse positoin according to that.
+  mouseChange() {
+    this.socket.on('mouseChange', (data: any) => {
+      this.addUserList(data);
+    });
+  }
+  // If some user diconnects remove that user from list and render the mouse cursors.
+  disconnectUser() {
+    this.socket.on('userDisconnected', (data: any) => {
+      this.removeUserList(data);
+    });
+  }
+  // Add or updated other user's mouse position data.
   addUserList(data: any) {
     if (!data.userId) {
       return;
     }
-    let index = this.userList.findIndex((user: any) => user.userId == data.userId);
-    data.position = { top: data.clientY + "px", left: data.clientX + "px" }
+    let index = this.userList.findIndex(
+      (user: any) => user.userId == data.userId
+    );
+    data.position = { top: data.clientY + 'px', left: data.clientX + 'px' };
     if (index == -1) {
-      this.userList.push(data)
+      this.userList.push(data);
     } else {
       this.userList[index] = data;
     }
   }
-
-
-  disconnectUser() {
-    this.socket.on("userDisconnected", (data: any) => {
-      this.removeUserList(data);
-    })
+  // Remove other user's mouse position data.
+  removeUserList(data: any) {
+    let index = this.userList.findIndex(
+      (user: any) => user.userId == data.userId
+    );
+    if (index > -1) {
+      this.userList.splice(index, 1);
+    }
   }
-
 }

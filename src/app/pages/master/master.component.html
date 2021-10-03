@@ -1,3 +1,4 @@
+<!-- render the mouse cursor of all the connected users -->
 <ng-container *ngFor="let user of userList">
     <div class="mouse-cursor" [ngStyle]="user.position" *ngIf="user.userId != socket.id">
         <span>{{user.username}}</span>
@@ -121,12 +122,26 @@
             </a>
 
         </div>
+
+        <input id="selection" type="hidden" #selection>
+        <span>
+            <b> Input Field: </b>
+            <input class="card card-small" id="textBox" type="text" placeholder="Type here....."
+                style="border: 2px solid;">
+        </span>
+        <span>
+            <b> Checkbox: </b>
+            <input id="checkBox1" type="checkbox" style="border: 2px solid;">
+            <input id="checkBox2" type="checkbox" style="border: 2px solid;">
+        </span>
+        <span>
+            <b> Radio: </b>
+            <input id="radio1" type="radio" name="test" style="border: 2px solid;">
+            <input id="radio2" type="radio" name="test" style="border: 2px solid;">
+        </span>
         <!-- Next Steps -->
         <h2>Next Steps</h2>
         <p>What do you want to do next with your app?</p>
-
-        <input id="selection" type="hidden" #selection>
-        <input class="card card-small" id="textBox" type="text" placeholder="Type here....." style="border: 2px solid;">
 
         <div class="card-container">
             <button id="btn-component" class="card card-small" (click)="selection.value = 'component'" tabindex="0">
