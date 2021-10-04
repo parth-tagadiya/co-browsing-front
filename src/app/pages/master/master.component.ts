@@ -115,7 +115,7 @@ export class MasterComponent implements OnInit {
   sendMouseMove(event: any) {
     // Here we are sending mouse position to other users.
     // Here "event.ClientX" will give position of cursor with respect to current window's top left position. We need to also consider the scroll position to get proper mouse position.
-    this.socket.emit("sendMouse", { userId: this.socket.id, username: this.username, screenX: document.documentElement.scrollLeft + event.screenX, screenY: document.documentElement.scrollTop + event.screenY, clientX: document.documentElement.scrollLeft + event.clientX, clientY: document.documentElement.scrollTop + event.clientY, roomId: this.roomId })
+    this.socket.emit("sendMouse", { userId: this.socket.id, username: this.username, screenX: event.screenX, screenY: event.screenY, clientX: event.clientX, clientY: event.clientY, isMaster: true, roomId: this.roomId })
     // this.socket.emit("sendMouse", { userId: this.socket.id, username: this.username, screenX: event.screenX, screenY: event.screenY, clientX: event.clientX, clientY: event.clientY, roomId: this.roomId })
   }
 
