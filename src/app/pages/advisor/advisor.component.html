@@ -1,0 +1,40 @@
+<ng-container *ngIf="!roomId">
+    <table class="mx-auto">
+        <tr class="text-center">
+            <td colspan="3">
+                <h3>Customer List</h3>
+                <hr>
+                <hr>
+            </td>
+        </tr>
+
+        <ng-container *ngFor="let customer of customerList">
+            <tr class="m-2">
+                <td><span class="mr-2">{{customer.user.name}}</span></td>
+                <td><span class="mr-2">{{customer.user.joinTime | date : 'MMM d, y, h:mm:ss a'}}</span></td>
+                <td>
+                    <button *ngIf="!customer.isAdvisorConnected" class="px-4 btn btn-primary"
+                        (click)="connectToRoom(customer.roomId, customer.customerId)">Join</button>
+                    <button *ngIf="customer.isAdvisorConnected" class="px-4 btn btn-primary" disabled>Join</button>
+                </td>
+            </tr>
+        </ng-container>
+    </table>
+</ng-container>
+<ng-container *ngIf="roomId">
+    <div style="overflow: hidden;">
+        <!-- <button class="m-2" (click)="disconnectToRoom()">Disconnect</button> -->
+        <!-- <br> -->
+        <!-- render the mouse cursor of all the connected users -->
+        <ng-container *ngFor="let user of userList">
+            <div class="mouse-cursor" [ngStyle]="user.position" *ngIf="user.isCustomer == true">
+                <span>{{user.username}}</span>
+            </div>
+        </ng-container>
+
+        <!-- This will contain the master's view -->
+        <iframe id="container-content">
+
+        </iframe>
+    </div>
+</ng-container>

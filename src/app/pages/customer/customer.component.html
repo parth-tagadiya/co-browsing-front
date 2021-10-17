@@ -1,0 +1,174 @@
+<!-- render the mouse cursor of all the connected users -->
+<ng-container *ngFor="let user of userList">
+    <div id="{{'user-pointer-' + user.userId}}" class="mouse-cursor" [ngStyle]="user.position"
+        *ngIf="user.isCustomer == false">
+        <span>{{user.username}}</span>
+    </div>
+</ng-container>
+<div id="container-content">
+    <div id="header-carousel" class="carousel slide" data-ride="carousel">
+        <div id="carousel-inner" class="carousel-inner">
+            <div id="header-item" class="carousel-item active">
+                <!-- Image -->
+                <img id="header-carousel-image" class="image-fluid w-100" src="assets/hero.jpg" alt="heroImage" />
+                <!-- Image -->
+                <!-- Content -->
+                <div id="header-carousel-caption" class="carousel-caption carousel-caption-main text-sm-left">
+                    <p id="carousel-caption-line-one" class="lightWhite mainImageFont m-0">Turn your videos &</p>
+                    <p id="carousel-caption-line-two" class="lightWhite mainImageFont m-0">picture into a movie</p>
+                    <p id="carousel-caption-line-three" class="lightWhite mainImageFont m-0">with just one click. </p>
+                </div>
+                <!-- Content -->
+            </div>
+        </div>
+    </div>
+    <!-- Hero Image and text -->
+
+    <!-- Header Text -->
+    <div id="header-text-container" class="container-fluid text-center">
+        <p id="header-text-title" class="lightBlack m-0 headerText">Tell Amazing Storeis</p>
+        <p id="header-text-content" class="lightBlack headerText2 mb-0">Editing software that brings your videos and
+            pictures together in
+            one movie.</p>
+    </div>
+    <!-- Header Text -->
+
+    <!-- Image and Content 1 -->
+    <div id="image-content-container-one" class="container-fluid mx-0 py-sm-5 py-4">
+        <div id="flipDiv" class="row d-flex flex-row justify-content-around align-items-center">
+            <!-- Image -->
+            <div id="flipDiv-image-container" class="col-sm-4">
+                <img id="flipDiv-image" class="img-fluid w-100" src="assets/computer1.jpg" alt="computer1">
+            </div>
+            <!-- Image -->
+            <!-- Content -->
+            <div id="flipDiv-centent-div" class="col-sm-8 pl-md-5 pl-sm-4">
+                <p id="flipDiv-centent-tilte" class="regRed text-center text-sm-left pb-md-3 containHeader">Cusomize
+                    Your Moments</p>
+                <p id="flipDiv-centent-text" class="lightBlack pr-md-5 pb-md-3 pr-md-5 containBody text-justify">Lorem
+                    ipsum dolor sit amet, consectetur adipisicing elit.
+                    Beatae, reiciendis! Nisi, impedit. Praesentium maxime pariatur harum? Odio at accusantium architecto
+                    perferendis ex rerum ullam fuga corrupti autem, veritatis, provident debitis?Maxime, minima. Sint
+                    quam maxime repellendus architecto expedita amet quia soluta nisi dolor quod eaque porro, vitae
+                    minima explicabo asperiores, corrupti necessitatibus omnis natus adipisci exercitationem? Dolorum
+                    nulla sapiente asperiores.</p>
+                <div id="flipDiv-btn-container" class="text-center text-sm-left">
+                    <button
+                        class="btn btn-outline-danger regRed w-25 text-center text-sm-left containFooter btn-disable"
+                        id="flip">Flip</button>
+                </div>
+            </div>
+            <!-- Content -->
+        </div>
+    </div>
+    <!-- Image and Content 1 -->
+
+    <!-- Image and Content 2 -->
+    <div id="image-content-container-two" class="container-fluid mx-0 pb-sm-5 pb-3">
+        <div id="change-image-container" class="row d-flex flex-row justify-content-around align-items-center">
+            <!-- Image -->
+            <div id="chnage-image-div" class="col-sm-4 order-sm-12">
+                <img class="img-fluid w-100" src="assets/computer2.jpg" id="computer2" alt="computer2">
+                <img class="img-fluid w-100" src="assets/computer2b.jpg" style="display: none;" alt="computer2b"
+                    id="computer2b">
+            </div>
+            <!-- Image -->
+            <!-- Content -->
+            <div id="change-image-content-div" class="col-sm-8 pl-md-5 pl-sm-4">
+                <p id="change-image-content-title" class=" regRed text-center text-sm-left pb-md-3 containHeader">
+                    Automatic Crop & Zoom</p>
+                <p id="change-image-content-text" class="lightBlack pr-md-5 pb-md-3 containBody text-justify">Lorem
+                    ipsum
+                    dolor sit amet, consectetur adipisicing elit.
+                    Beatae, reiciendis! Nisi, impedit. Praesentium maxime pariatur harum? Odio at accusantium architecto
+                    perferendis ex rerum ullam fuga corrupti autem, veritatis, provident debitis?Maxime, minima. Sint
+                    quam maxime repellendus architecto expedita amet quia soluta nisi dolor quod eaque porro, vitae
+                    minima explicabo asperiores, corrupti necessitatibus omnis natus adipisci exercitationem? Dolorum
+                    nulla sapiente asperiores.</p>
+                <div id="change-image-content-btn" class="text-center text-sm-left">
+                    <button id="change-image-btn"
+                        class="btn btn-outline-danger regRed w-25 text-center text-sm-left containFooter"
+                        id="changeImg">Change</button>
+                </div>
+            </div>
+            <!-- Content -->
+        </div>
+    </div>
+    <!-- Image and Content 2-->
+
+    <!-- Close Image -->
+    <div id="close-image-curousel" class="carousel mb-sm-1" data-ride="carousel">
+        <div id="close-image-curousel-inner" class="carousel-inner">
+            <div id="close-image-curousel-item" class="carousel-item active">
+                <!-- Image -->
+                <img id="close-image-curousel-img" class="image-fluid w-100" src="assets/closing-photo.jpg"
+                    alt="closing-photo">
+                <!-- Image -->
+                <div id="close-image-curousel-caption"
+                    class="carousel-caption carousel-caption-closeImg align-middle text-block">
+                    <div id="close-image-curousel-coption-div" class="my-sm-3 my-2">
+                        <!-- Content -->
+                        <div id="close-image-curousel-caption-content" class="mb-3 mb-sm-4 mb-md-5">
+                            <p id="close-image-curousel-caption-content-title"
+                                class="regWhite closeImageHeaderFont m-0">Free trial. No credit card. No Hassle.</p>
+                            <p id="close-image-curousel-caption-content-text" class="lightWhite closeImageFont m-0">Just
+                                enter your email address below
+                                and
+                                begin capturing moments.</p>
+                        </div>
+
+                        <!-- Content -->
+                        <!-- form -->
+                        <div id="close-image-curousel-form-div"
+                            class="d-flex flex-row justify-content-around align-items-center">
+                            <form action="" id="close-image-curousel-form">
+                                <div id="close-image-curousel-form-row-one" class="row formCenter">
+                                    <span id="span-input-name">
+                                        <b id="lable-input-name"> Input Field: </b>
+                                        <input class="card card-small" id="textBox" type="text" placeholder="Type here"
+                                            style="border: 2px solid;">
+                                    </span>
+                                    <span id="span-input-checkbox">
+                                        <b id="lable-input-checkbox"> Checkbox: </b>
+                                        <br>
+                                        <input id="checkBox1" type="checkbox" style="border: 2px solid;">NodeJS
+                                        <br>
+                                        <input id="checkBox2" type="checkbox" style="border: 2px solid;">Angular
+                                    </span>
+                                    <span id="span-input-radio">
+                                        <b id="lable-input-radio"> Radio: </b>
+                                        <br>
+                                        <input id="radio1" type="radio" name="test" style="border: 2px solid;">Male
+                                        <br>
+                                        <input id="radio2" type="radio" name="test" style="border: 2px solid;">Female
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- form -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Close Image -->
+
+    <!-- Footer Image -->
+    <div id="footer-carousel" class="carousel slide" data-ride="carousel">
+        <div id="footer-carousel-inner" class="carousel-inner">
+            <div id="footer-carousel-item" class="carousel-item active">
+                <!-- image -->
+                <img id="footer-carousel-image" class="w-100" src="assets/geometric-band.jpg" style="max-height: 100px;"
+                    alt="geometric-band">
+                <!-- image -->
+                <!-- content -->
+                <div id="footer-carousel-caption" class="carousel-caption" style="bottom: 0; padding-bottom: 0;">
+                    <p id="footer-carousel-caption-line-one" class="lightWhite bottomImgFont" style="margin: 1%;">
+                        Sitemap | Legal | Blog</p>
+                </div>
+                <!-- content -->
+            </div>
+        </div>
+    </div>
+    <!-- Footer Image -->
+</div>

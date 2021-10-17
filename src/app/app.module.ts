@@ -5,12 +5,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MasterComponent } from './pages/master/master.component';
 import { SlaveComponent } from './pages/slave/slave.component';
+import { CustomerComponent } from './pages/customer/customer.component';
+import { AdvisorComponent } from './pages/advisor/advisor.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MasterComponent,
-    SlaveComponent
+    SlaveComponent,
+    CustomerComponent,
+    AdvisorComponent
   ],
   imports: [
     BrowserModule,
