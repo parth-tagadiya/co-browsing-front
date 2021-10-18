@@ -22,8 +22,8 @@ export class AdvisorComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    // this.username = prompt('What is your name?', '');
-    this.username += "Parth(Advisor)"
+    this.username = prompt('What is your name?', '');
+    this.username += "(Advisor)"
     this.socket = io(`${environment.settings.apiProtocol}://${environment.settings.apiHost}`);
     this.loadData();
   }

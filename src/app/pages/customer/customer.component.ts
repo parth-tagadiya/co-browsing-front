@@ -23,8 +23,7 @@ export class CustomerComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    // this.username = prompt('What is your name?', '');
-    this.username = "Parth(Customer)";
+    this.username = prompt('What is your name?', '');
     this.socket = io(`${environment.settings.apiProtocol}://${environment.settings.apiHost}`);
     this.userData = {
       name: this.username,
