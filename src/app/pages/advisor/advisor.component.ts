@@ -126,14 +126,12 @@ export class AdvisorComponent implements OnInit {
 
   getChangedContent() {
     this.socket.on('getChangedContent', (data: any) => {
-      // Get the html data and setup it in iframe.
       if (data.advisorId == this.socket.id) {
-        // Get iframe and insert html.
         // @ts-ignore
         const iframe = document.getElementById('container-content');
         // @ts-ignore
         const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-
+        // console.log("Changed DOM Data(This data received from the customer)", data.changedData)
         for (let changedData of data.changedData) {
           if (changedData.id) {
             // @ts-ignore

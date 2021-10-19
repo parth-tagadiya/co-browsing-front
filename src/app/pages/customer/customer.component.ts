@@ -49,11 +49,13 @@ export class CustomerComponent implements OnInit {
     let changes = new MutationObserver((mutations: MutationRecord[]) => {
       let sendData: any[] = []
       mutations.map((event: any) => {
+        // console.log("Mutation Observer Change", event);
         let eventData = {
           id: event.target.id,
           type: event.type,
           element: document.getElementById(event.target.id)?.outerHTML
         }
+        // console.log("Changed DOM Data(This data send to the advisor)", eventData)
         sendData.push(eventData)
       });
       this.socket.emit('sendChangedContent', { changedData: sendData, roomId: this.roomId, customerId: this.socket.id, advisorId: this.advisorId, });
